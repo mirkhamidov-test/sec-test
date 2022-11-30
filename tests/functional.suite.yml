@@ -19,3 +19,4 @@ modules:
         - REST:
               depends: Symfony
         - \App\Tests\Module\AssertDateTimeModule
+        - \App\Tests\Module\MockModule

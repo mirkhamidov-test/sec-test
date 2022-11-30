@@ -58,14 +58,6 @@ class AccessTokenValidatorTest extends TestCase
         $validator->validate($request);
     }
 
-    // private function generateRequest(): Request
-    // {
-    //    $request = Request::create('/', 'GET');
-    //    $request->headers = new HeaderBag(['x-api-key' => 'AnyApiKey']);
-    //
-    //    return $request;
-    // }
-
     private function getMockedRepository(string $dateFrom = 'now -1 year', string $dateTo = 'now +1 year'): SpecificationPeriodRepository
     {
         $repository = $this->createMock(SpecificationPeriodRepository::class);
