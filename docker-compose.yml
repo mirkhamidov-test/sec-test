@@ -61,6 +61,25 @@ services:
             BACKEND_PORT: 9090
             BACKEND_HOST: app
 
+    db:
+        image: mariadb:10.3.28
+        environment:
+            MYSQL_ROOT_PASSWORD: verys1cret
+            MYSQL_DATABASE: dbs4oqsh
+            MYSQL_USER: dbs4oqsh_kms0cal
+            MYSQL_PASSWORD: 123456
+        volumes:
+            - db-data:/var/lib/mysql
+            - ${PWD}/.docker/db/dump/db_dump.sql:/docker-entrypoint-initdb.d/db_copy.sql
+        networks:
+            - app
+        ports:
+            - "3306:3306"
+
 networks:
     app:
         name: ${PROJECT_NAME}-network
+
+volumes:
+    db-data:
+        name: ${PROJECT_NAME}-db-data
