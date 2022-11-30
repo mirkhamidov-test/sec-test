@@ -22,6 +22,13 @@ stop-app: ## Stop applications
 
 bash-app: ## Go to the shell
 	$(DC) exec -- app bash
+	$(DC) down
+
+test-app: ## Run tests
+	$(DC) exec -- app php vendor/bin/codecept run
+
+test-coverage-app: ## Run tests coverage
+	$(DC) exec -- app php vendor/bin/codecept run --coverage --coverage-html
 
 
 php-cs-fix: ## Run CS fixer and fix
