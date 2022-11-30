@@ -1,0 +1,66 @@
+version: '3.8'
+
+services:
+    traefik:
+        env_file:
+            - docker.env
+            - docker.env.local
+        image: ${ARCHITECTURE}/traefik:${TRAEFIK_VERSION}
+        restart: always
+        ports:
+            - "8888:8080" # The Web UI (enabled by --api)
+            - "80:80"
+        networks:
+            - app
+        volumes:
+            - ${PWD}/.docker/traefik/config/traefik.yaml:/etc/traefik/traefik.yaml
+            - /var/run/docker.sock:/var/run/docker.sock
+    app:
+        container_name: ${PROJECT_NAME}-app
+        env_file:
+            - docker.env
+            - docker.env.local
+        build:
+            context: .
+            dockerfile: ./.docker/php/Dockerfile
+            target: app_php
+            args:
+                RUN_UID: ${USERID}
+                PHP_VERSION: ${PHP_VERSION}
+                XDEBUG_REMOTE_HOST: ${XDEBUG_REMOTE_HOST}
+                ARCHITECTURE: ${ARCHITECTURE} # Could be removed if not Mac Silicon
+        environment:
+            PHP_IDE_CONFIG: serverName=${PROJECT_NAME}
+        volumes:
+            - ${PWD}:/app:${DOCKER_MOUNT_CONF}
+        networks:
+            - app
+
+    frontend:
+        container_name: ${PROJECT_NAME}-frontend
+        env_file:
+            - docker.env
+            - docker.env.local
+        build:
+            context: .
+            dockerfile: ./.docker/nginx/Dockerfile
+        volumes:
+            - ${PWD}:/app:${DOCKER_MOUNT_CONF}
+        networks:
+            - app
+        depends_on:
+            - app
+        labels:
+            - traefik.enable=true
+            - traefik.http.routers.front_${PROJECT_NAME}.rule=Host(`secupay.localhost`)
+            - traefik.http.routers.front_${PROJECT_NAME}.entrypoints=web
+            - traefik.docker.network=app
+            - traefik.http.services.front_${PROJECT_NAME}.loadbalancer.server.port=8080
+        environment:
+            NGINX_ROOT_APP_DIR: /app/public
+            BACKEND_PORT: 9090
+            BACKEND_HOST: app
+
+networks:
+    app:
+        name: ${PROJECT_NAME}-network
