@@ -18,3 +18,4 @@ modules:
         - \App\Tests\Helper\Functional
         - REST:
               depends: Symfony
+        - \App\Tests\Module\AssertDateTimeModule
