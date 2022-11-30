@@ -12,7 +12,7 @@ abstract class AbstractNonEntityRepository
     {
     }
 
-    public function getConnection(): Connection
+    protected function getConnection(): Connection
     {
         return $this->connection;
     }
