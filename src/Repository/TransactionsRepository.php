@@ -18,7 +18,9 @@ select
     md_fr.flagbit
 FROM stamd_flagbit_ref md_fr
     RIGHT JOIN transaktion_transaktionen tt on md_fr.datensatz_id = tt.trans_id AND md_fr.datensatz_typ_id= :dataSetType
+    INNER JOIN vorgaben_zeitraum vz ON (vz.zeitraum_id = md_fr.zeitraum_id)
 WHERE tt.trans_id = :transactionId
+AND NOW() BETWEEN vz.von AND vz.bis
 EOF;
         $stmt = $this->getConnection()->prepare($sql);
         $resultSet = $stmt->executeQuery([
